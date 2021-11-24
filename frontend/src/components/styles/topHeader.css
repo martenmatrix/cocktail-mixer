@@ -1,0 +1,20 @@
+.status {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    column-gap: 0.5em;
+}
+
+.circle {
+    border-radius: 50%;
+    width: 0.5em;
+    height: 0.5em;
+}
+
+.circle.green {
+    background: #378805
+}
+
+.circle.red {
+    background: #E3242B
+}

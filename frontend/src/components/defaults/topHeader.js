@@ -1,30 +1,34 @@
 import React, { useState, useEffect } from 'react';
-import { getStatus } from '../../requests';
+import settingsIcon from './../assets/settings.svg';
 import '../styles/topHeader.css';
 
-function useConnectedStatus() {
-    const [isConnected, setIsConnected] = useState(false);
+import { getStatus } from './../../requests';
+
+function useOnlineStatus() {
+    const [onlineStatus, setOnlineStatus] = useState({
+        online: false,
+        task: 'Idle'
+    });
 
     useEffect(() => {
         async function checkStatus() {
-            const status = await getStatus();
-            const onlineStatus = status.online;
+            const newStatus = await getStatus();
 
-            if(onlineStatus !== isConnected) {
-                setIsConnected(onlineStatus);
+            if(onlineStatus !== newStatus) {
+                setOnlineStatus(newStatus);
             }
         }
 
         checkStatus();
         const intervalID = setInterval(checkStatus, 2000);
         return () => clearInterval(intervalID);
-    });
+    }, []);
 
-    return isConnected;
+    return onlineStatus;
 }
 
-function ConnectionStatus() {
-    const isConnected = useConnectedStatus();
+function ConnectionStatus(props) {
+    const isConnected = props.connected;
 
     return (
         <div className="status">
@@ -38,9 +42,38 @@ function ConnectionStatus() {
     )
 }
 
-function Header() {
+function TaskStatus(props) {
+    const task = props.currentTask;
+
     return (
-        <ConnectionStatus />
+        <div className="task">
+            <div className="current">Current Status:</div>
+            <div className="task">{task}</div>
+        </div>
+    )
+}
+
+function SettingsIcon(props) {
+    const openSettings = props.openSettings;
+
+    return (
+        <div className="settings">
+            <img src={settingsIcon} alt="Settings"></img>
+        </div>
+    )
+}
+
+function Header() {
+    const connectionStatus = useOnlineStatus();
+    const isOnline = connectionStatus.online;
+    const currentlyDoing = connectionStatus.task;
+
+    return (
+        <div className="top-header">
+            <ConnectionStatus connected={isOnline}/>
+            <TaskStatus currentTask={currentlyDoing}/>
+            <SettingsIcon />
+        </div>
     )
 }
 

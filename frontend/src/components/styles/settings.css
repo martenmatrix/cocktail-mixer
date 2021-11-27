@@ -1,0 +1,79 @@
+@keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+.settings-menu {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.settings-menu .settings-container {
+    width: 90%;
+    max-width: 30rem;
+    height: 90%;
+    border-radius: 1rem;
+
+    background: white;
+}
+
+.blur-background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+
+    z-index: -1;
+}
+
+.settings-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.password-input {
+    display: flex;
+    align-items: center;
+
+    border: #7D7D7D solid 1px;
+    border-radius: 0.25rem;
+    min-width: 3rem;
+}
+
+.password-input input {
+    border: none;
+    outline: none;
+}
+
+.password-input button {
+    border: none;
+    background: none;
+
+    padding: 0.25em;
+    color: #4e4e4e;
+    background-color: #7d7d7d3f;
+
+    border-left: #7d7d7d3f solid 1px;
+    cursor: pointer;
+}
+
+.invalid {
+    animation: shake 0.5s;
+    border-color: red;
+}

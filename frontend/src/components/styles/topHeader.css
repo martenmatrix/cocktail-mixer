@@ -1,3 +1,25 @@
+/*HEADER DIV*/
+.top-header {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+
+    border: black solid 1px;
+    border-radius: 0.5rem;
+    margin: 1rem;
+    
+    padding: 0.5rem;
+    box-shadow: 0 0 1rem #888888;
+}
+
+/*SETTINGS ICON DIV*/
+.settings {
+    cursor: pointer;
+    padding: 1rem;
+    margin: -1rem;
+}
+
+/*STATUS DIV*/
 .status {
     display: flex;
     justify-content: center;

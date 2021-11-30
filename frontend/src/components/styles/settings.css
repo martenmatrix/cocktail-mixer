@@ -13,6 +13,10 @@
 }
 
 .settings-menu {
+    transition: opacity 100ms;
+    pointer-events: none;
+    opacity: 0;
+
     position: absolute;
     width: 100%;
     height: 100%;
@@ -22,13 +26,27 @@
     align-items: center;
 }
 
+.settings-menu.active {
+    pointer-events: auto;
+    opacity: 1;
+}
+
 .settings-menu .settings-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
     width: 90%;
     max-width: 30rem;
     height: 90%;
     border-radius: 1rem;
 
     background: white;
+}
+
+.settings-container > * {
+    margin: 1em;
 }
 
 .blur-background {
@@ -40,16 +58,10 @@
     z-index: -1;
 }
 
-.settings-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-}
-
 .password-input {
     display: flex;
     align-items: center;
+    margin-top: auto;
 
     border: #7D7D7D solid 1px;
     border-radius: 0.25rem;
@@ -77,3 +89,18 @@
     animation: shake 0.5s;
     border-color: red;
 }
+
+.settings-container .close-button {
+    margin-top: auto;
+    padding: 0;
+
+    cursor: pointer;
+    border: none;
+
+    border-radius: 5rem;
+
+    background: rgba(221, 31, 31, 0.733);
+    width: 3rem;
+    height: 3rem;
+}
+

@@ -54,25 +54,26 @@ function TaskStatus(props) {
 }
 
 function SettingsIcon(props) {
-    const openSettings = props.openSettings;
+    const cbWhenPressed = props.cbWhenPressed;
 
     return (
-        <div className="settings">
+        <div onClick={cbWhenPressed} className="settings">
             <img src={settingsIcon} alt="Settings"></img>
         </div>
     )
 }
 
-function Header() {
+function Header(props) {
     const connectionStatus = useOnlineStatus();
     const isOnline = connectionStatus.online;
     const currentlyDoing = connectionStatus.task;
 
+    const cbShowSettings = props.cbShowSettings;
     return (
         <div className="top-header">
             <ConnectionStatus connected={isOnline}/>
             <TaskStatus currentTask={currentlyDoing}/>
-            <SettingsIcon />
+            <SettingsIcon cbWhenPressed={cbShowSettings}/>
         </div>
     )
 }

@@ -11,6 +11,16 @@ function BlurBackground() {
     )
 }
 
+function CloseButton(props) {
+    const cbWhenPressed = props.cbWhenPressed;
+
+    return (
+        <button className="close-button" onClick={cbWhenPressed}>
+        </button>
+    )
+}
+
+
 function Password(props) {
     const [password, setPassword] = useState('');
     const [redBorder, setRedBorder] = useState(false);
@@ -24,7 +34,7 @@ function Password(props) {
     function checkInput() {
         /* all on the requests on the shown site after correct password
         must be sent with the correct password */
-        if (password === '') return;
+        if (password === '') setRedBorder(true);
         checkPassword(password).then(res => {
             if (res.correct) {
                 cbWhenPasswordCorrect();
@@ -47,19 +57,45 @@ function Password(props) {
 
 }
 
+function DropDown(props) {
+    
+}
+
+function PumpSetting(props) {
+    const pumpNumber = props.pumpNumber;
+
+    return (
+        <div className="pump-setting">
+            <div className="pump-number" data-number={pumpNumber}>{pumpNumber}</div>
+            <div className="selected-output">
+            </div>
+        </div>
+    )
+}
+
+function AllPumpSettings() {
+    return (
+        <div className="pump-settings">
+        </div>
+    );
+}
+
 
 function SettingsMenu(props) {
-    const [isOpen, setIsOpen] = useState(false);
+    const [accessGranted, setAccessGranted] = useState(false);
+    const cbToClose = props.cbToClose;
+    const showSettings = props.show;
 
-    function showSettings() {
-        setIsOpen(true);
+    function grantAccess() {
+        setAccessGranted(true);
     }
 
     return (
-        <div className="settings-menu">
+        <div className={`settings-menu ${showSettings ? 'active' : ''}`}>
             <BlurBackground />
             <div className="settings-container">
-                {isOpen ? <p>Access granted</p> : <Password cbWhenCorrect={showSettings}/>}
+                {accessGranted ? <p>Access granted</p> : <Password cbWhenCorrect={grantAccess}/>}
+                <CloseButton cbWhenPressed={cbToClose}/>
             </div>
         </div>
     )

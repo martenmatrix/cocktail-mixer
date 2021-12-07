@@ -1,10 +1,11 @@
 const HOSTNAME = window.location.href;
 const HOSTNAME_WITHOUT_PORT = HOSTNAME.slice(0, -6);
 const BACKEND_PORT = 4000;
+const BACKEND_LINK = `${HOSTNAME_WITHOUT_PORT}:${BACKEND_PORT}/`;
 
 async function getStatus() {
     try {
-        const response = await fetch(`${HOSTNAME_WITHOUT_PORT}:${BACKEND_PORT}/status`);
+        const response = await fetch(BACKEND_LINK + 'status');
         const json = await response.json();
         const responseObject = {
             online: true,
@@ -18,7 +19,7 @@ async function getStatus() {
 
 async function checkPassword(password) {
     try {
-        const response = await fetch(`${HOSTNAME_WITHOUT_PORT}:${BACKEND_PORT}/password`, {
+        const response = await fetch(BACKEND_LINK + 'password', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -33,4 +34,72 @@ async function checkPassword(password) {
     }
 }
 
-export { getStatus, checkPassword }; 
+async function getPumpsAndStatus() {
+    try {
+        const response = await fetch(BACKEND_LINK + 'pumps');
+        const json = await response.json();
+
+        if (response.status !== 200) {
+            throw new Error(json.error);
+        }
+        return {
+            json,
+            success: true
+        }
+    } catch (e) {
+        console.error(e);
+        return { 
+            error: e,
+            success: false 
+        };
+    }
+}
+
+async function getPossibleDrinks() {
+    try {
+        const response = await fetch(BACKEND_LINK + 'drink/ingredients');
+        const json = await response.json();
+
+        if (response.status !== 200) {
+            throw new Error(json.error);
+        }
+        return {
+            drinks: json,
+            success: true
+        }
+    } catch (e) {
+        console.error(e);
+        return { 
+            error: e,
+            success: false 
+        };
+    }
+}
+
+async function setPumpSelectionStatus(password, pumpNumber, newSelection) {
+    try {
+        const response = await fetch(BACKEND_LINK + 'setPump', {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ password, pump: pumpNumber, newSelection }),
+        });
+        const json = await response.json();
+
+        if (response.status !== 200) {
+            throw new Error(json.error);
+        }
+        return {
+            success: true
+        }
+    } catch (e) {
+        console.error(e);
+        return { 
+            error: e,
+            success: false 
+        };
+    }
+}
+
+export { getStatus, checkPassword, getPumpsAndStatus, getPossibleDrinks, setPumpSelectionStatus }; 

@@ -1,0 +1,18 @@
+{
+    "juice": [
+        "Passion fruit",
+        "Orange"
+    ],
+    "softdrink": [
+        "Ginger Ale"
+    ],
+    "alcohol": [
+        "Vodka"
+    ],
+    "unableToPump": [
+        "Lime",
+        "Brown cane sugar",
+        "Ice",
+        "crushed Ice"
+    ]
+}

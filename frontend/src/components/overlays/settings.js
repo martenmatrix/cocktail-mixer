@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { checkPassword, getPumpsAndStatus, getPossibleDrinks, setPumpSelectionStatus } from "../../requests";
-import { NormalButton, DangerButton } from "./buttons";
+import { DangerButton } from "./buttons";
 import './../styles/settings.css';
 
 function setPasswordCookie(password) {
@@ -165,7 +165,7 @@ function PumpSettings(props) {
                     })
                 ) : <div>Loading...</div>}
             </div>
-            <DangerButton onClick={refresh}>Reset</DangerButton>
+            <DangerButton onClick={refresh}>Refresh</DangerButton>
         </div>
     )
 }

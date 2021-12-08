@@ -13,10 +13,7 @@ function useOnlineStatus() {
     useEffect(() => {
         async function checkStatus() {
             const newStatus = await getStatus();
-
-            if(onlineStatus !== newStatus) {
-                setOnlineStatus(newStatus);
-            }
+            setOnlineStatus(newStatus);
         }
 
         checkStatus();

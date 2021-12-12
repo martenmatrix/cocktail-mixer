@@ -102,4 +102,9 @@ async function setPumpSelectionStatus(password, pumpNumber, newSelection) {
     }
 }
 
-export { getStatus, checkPassword, getPumpsAndStatus, getPossibleDrinks, setPumpSelectionStatus }; 
+async function addIngredient(password, ingredient, category) {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    return true;
+}
+
+export { getStatus, checkPassword, getPumpsAndStatus, getPossibleDrinks, setPumpSelectionStatus, addIngredient }; 

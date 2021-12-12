@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { checkPassword, getPumpsAndStatus, getPossibleDrinks, setPumpSelectionStatus } from "../../requests";
+import { checkPassword, getPumpsAndStatus, getPossibleDrinks, setPumpSelectionStatus, addIngredient } from "../../requests";
 import { NormalButton, DangerButton } from "./buttons";
 import './../styles/settings.css';
 
@@ -79,8 +79,44 @@ function Password(props) {
 
 }
 
-function IngredientsSelector(props) {
-    
+function IngredientsCategorySelector(props) {
+    const onChange = props.onChange;
+    const selectedCategory = props.selectedCategory;
+
+    const [currentCategory, setCurrentCategory] = useState();
+    const [categories, setCategories] = useState();
+
+    async function getCategories() {
+        const response = await getPossibleDrinks();
+
+        const categories = Object.entries(response.drinks).map(([key, value]) => {
+            return key;
+        });
+
+        setCategories(categories);
+    }
+
+    useEffect(() => {
+        getCategories();
+
+        if (selectedCategory) setCurrentCategory(selectedCategory);
+    }, [selectedCategory]);
+
+    function handleChange(event) {
+        const newInput = event.target.value;
+        setCurrentCategory(newInput);
+        try {
+            onChange(newInput);
+        } catch (e) {
+            console.log('Did you define an onChange prop? ' + e);
+        }
+    }
+
+    return (
+        <select className="ingredients-category-selector" value={currentCategory} onChange={handleChange}>
+            {categories ? categories.map((category) => <option key={category} value={category}>{category}</option>) : <option>Loading...</option>}
+        </select>
+    )
 }
 
 function PumpSetting(props) {
@@ -175,15 +211,38 @@ function PumpSettings(props) {
 }
 
 function AddIngredient() {
-    return (
-        <div className="add-ingredient">
-            <div className="add-ingredient-title">Add Ingredient</div>
-            <form className="add-ingredient-input">
-                <input type="text" />
-                <button className="submit">Submit</button>
-            </form>
-        </div>
-    )
+    const [selectedCategory, setSelectedCategory] = useState();
+    const [ingredientsName, setIngredientsName] = useState();
+    const [locked, setLocked] = useState(false);
+
+    async function onSubmit(event) {
+        event.preventDefault();
+        setLocked(true);
+        if (!(ingredientsName && selectedCategory)) return;
+        const addedIngredient = await addIngredient(selectedCategory, ingredientsName);
+        if (addedIngredient) setIngredientsName();
+        setLocked(false);
+    }
+
+    function handleChange(event) {
+        const newInput = event.currentTarget.value;
+        setIngredientsName(newInput);
+    }
+
+    if (locked) {
+        return <div>Adding...</div>
+    } else {
+        return (
+            <div className="add-ingredient">
+                <div className="add-ingredient-title">Add Ingredient</div>
+                <form className="add-ingredient-input" onSubmit={onSubmit}>
+                    <input type="text" onChange={handleChange} required/>
+                    <IngredientsCategorySelector onChange={setSelectedCategory} selectedCategory={selectedCategory}/>
+                    <input type="submit" value="Add" required/>
+                </form>
+            </div>
+        )
+    }
 }
 
 function RemoveDrink() {
@@ -200,7 +259,7 @@ function SettingsHidden() {
     const [showAddIngredient, setShowAddIngredient] = useState(false);
 
     return (
-        <div class="settings-hidden">
+        <div className="settings-hidden">
             <PumpSettings />
             {showRemoveDrink ? <RemoveDrink /> : <DangerButton onClick={() => setShowRemoveDrink(true)}>Remove Drink</DangerButton>}
             {showRemoveIngredient ? <RemoveIngredient /> : <DangerButton onClick={() => setShowRemoveIngredient(true)}>Remove Ingredient</DangerButton>}

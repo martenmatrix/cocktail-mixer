@@ -10,12 +10,12 @@ function useOnlineStatus() {
         task: 'Idle'
     });
 
-    useEffect(() => {
-        async function checkStatus() {
-            const newStatus = await getStatus();
-            setOnlineStatus(newStatus);
-        }
+    async function checkStatus() {
+        const newStatus = await getStatus();
+        setOnlineStatus(newStatus);
+    }
 
+    useEffect(() => {
         checkStatus();
         const intervalID = setInterval(checkStatus, 2000);
         return () => clearInterval(intervalID);

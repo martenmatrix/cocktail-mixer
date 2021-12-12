@@ -1,7 +1,11 @@
+const DrinksDatabase = require('../databaseHandler');
+
 const express = require('express');
 const fs = require('fs');
 
 const router = express.Router();
+
+const db = new DrinksDatabase();
 
 router.get('/make', (req, res) => {
     res.send('Already making a drink.');

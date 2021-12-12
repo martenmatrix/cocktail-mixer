@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { checkPassword, getPumpsAndStatus, getPossibleDrinks, setPumpSelectionStatus } from "../../requests";
-import { DangerButton } from "./buttons";
+import { NormalButton, DangerButton } from "./buttons";
 import './../styles/settings.css';
 
 function setPasswordCookie(password) {
@@ -77,6 +77,10 @@ function Password(props) {
         </div>
     )
 
+}
+
+function IngredientsSelector(props) {
+    
 }
 
 function PumpSetting(props) {
@@ -165,11 +169,45 @@ function PumpSettings(props) {
                     })
                 ) : <div>Loading...</div>}
             </div>
-            <DangerButton onClick={refresh}>Refresh</DangerButton>
+            <NormalButton onClick={refresh}>Refresh</NormalButton>
         </div>
     )
 }
 
+function AddIngredient() {
+    return (
+        <div className="add-ingredient">
+            <div className="add-ingredient-title">Add Ingredient</div>
+            <form className="add-ingredient-input">
+                <input type="text" />
+                <button className="submit">Submit</button>
+            </form>
+        </div>
+    )
+}
+
+function RemoveDrink() {
+    return <DangerButton>Remove Drink</DangerButton>;
+}
+
+function RemoveIngredient() {
+    return <DangerButton>Remove Ingredient</DangerButton>;
+}
+
+function SettingsHidden() {
+    const [showRemoveDrink, setShowRemoveDrink] = useState(false);
+    const [showRemoveIngredient, setShowRemoveIngredient] = useState(false);
+    const [showAddIngredient, setShowAddIngredient] = useState(false);
+
+    return (
+        <div class="settings-hidden">
+            <PumpSettings />
+            {showRemoveDrink ? <RemoveDrink /> : <DangerButton onClick={() => setShowRemoveDrink(true)}>Remove Drink</DangerButton>}
+            {showRemoveIngredient ? <RemoveIngredient /> : <DangerButton onClick={() => setShowRemoveIngredient(true)}>Remove Ingredient</DangerButton>}
+            {showAddIngredient ? <AddIngredient /> : <NormalButton onClick={() => setShowAddIngredient(true)}>Add Ingredient</NormalButton>}
+        </div>
+    );
+}
 
 function SettingsMenu(props) {
     const [accessGranted, setAccessGranted] = useState(false);
@@ -184,7 +222,7 @@ function SettingsMenu(props) {
         <div className={`settings-menu ${showSettings ? 'active' : ''}`}>
             <BlurBackground />
             <div className="settings-container">
-                {accessGranted ? <PumpSettings /> : <Password cbWhenCorrect={grantAccess}/>}
+                {accessGranted ? <SettingsHidden /> : <Password cbWhenCorrect={grantAccess}/>}
                 <CloseButton cbWhenPressed={cbToClose}/>
             </div>
         </div>

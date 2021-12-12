@@ -5,7 +5,7 @@ function DangerButton(props) {
     const cb = props.onClick;
 
     return (
-        <div className="button danger" onClick={cb}>
+        <div className="button red" onClick={cb}>
             {text}
         </div>
     )
@@ -16,7 +16,7 @@ function NormalButton(props) {
     const cb = props.onClick;
 
     return (
-        <div className="button danger" onClick={cb}>
+        <div className="button green" onClick={cb}>
             {text}
         </div>
     )

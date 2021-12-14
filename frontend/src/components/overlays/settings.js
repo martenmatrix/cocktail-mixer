@@ -79,6 +79,61 @@ function Password(props) {
 
 }
 
+function IngredientsSelector(props) {
+    const onChange = props.onChange;
+    const startDrink = props.selectedDrink;
+    const [ingredients, setIngredients] = useState();
+    const [selectedDrink, setSelectedDrink] = useState();
+
+    async function getIngredients() {
+        const drinks = await getPossibleDrinks();
+        setIngredients(drinks.drinks);
+    }
+
+    useEffect(() => {
+        if (!startDrink)
+            setSelectedDrink('empty')
+        else
+            setSelectedDrink(startDrink);
+    }, [startDrink]);
+
+    useEffect(() => {
+        getIngredients();
+    }, []);
+
+    function handleChange(event) {
+        const newInput = event.target.value;
+        setSelectedDrink(newInput);
+        try {
+            onChange(event);
+        } catch (e) {
+            console.log('Did you define an onChange prop? ' + e);
+        }
+    }
+
+    function renderOptions(options) {
+        return options.map((option, index) => <option key={index} value={option}>{option}</option>);
+    }
+
+    if (ingredients && selectedDrink)
+        return (
+            <select value={selectedDrink} onChange={handleChange}>
+                <option key="empty" value="empty">Empty</option>
+                {Object.entries(ingredients).map(([key, value]) => {
+                    return (<optgroup key={key} label={key}>
+                        {renderOptions(value)}
+                    </optgroup>)
+                })}
+            </select>
+        )
+    else
+        return (
+            <select disabled>
+                <option value="loading">Loading...</option>
+            </select>
+        )
+}
+
 function IngredientsCategorySelector(props) {
     const onChange = props.onChange;
     const selectedCategory = props.selectedCategory;
@@ -121,61 +176,20 @@ function IngredientsCategorySelector(props) {
 }
 
 function PumpSetting(props) {
-    const drinks = props.drinks;
     const pumpNumber = props.pumpNumber;
     const formattedName = 'pump' + pumpNumber;
-    const startDrink = props.selectedDrink;
-    const [selectedDrink, setSelectedDrink] = useState();
 
-    useEffect(() => {
-        if (!startDrink)
-            setSelectedDrink('empty')
-        else
-            setSelectedDrink(startDrink);
-    }, [startDrink]);
-
-    function handleChange(event) {
+    function setSelection(event) {
         const newInput = event.target.value;
         const currentPassword = getPasswordCookie();
-        setSelectedDrink(newInput);
         setPumpSelectionStatus(currentPassword, pumpNumber, newInput);
     }
 
-    const renderOptions = (options) => {
-        return options.map((option) => <option key={option} value={option}>{option}</option>);
-    }
-
-    if(drinks && selectedDrink) {
-        return (
-            <div className="pump-setting">
-                <div className="pump-title">Pump {pumpNumber}</div>
-                <select name={formattedName} value={selectedDrink} id={formattedName} onChange={handleChange}>
-                    <option key="empty" value="empty">Empty</option>
-                    {Object.entries(drinks).map(([key, value]) => {
-                        return (<optgroup key={key} label={key}>
-                            {renderOptions(value)}
-                        </optgroup>)
-                    })}
-                </select>
-            </div>
-        );
-    } else {
-        return (
-            <select name={formattedName} id={formattedName} disabled>
-                <option value="loading">Loading...</option>
-            </select>
-        );
-    }
+    return <IngredientsSelector onChange={setSelection} selectedDrink={props.selectedDrink} />
 }
 
-function PumpSettings(props) {
-    const [drinks, setDrinks] = useState();
+function PumpSettings() {
     const [pumps, setPumps] = useState();
-
-    async function getDrinks() {
-        const drinks = await getPossibleDrinks();
-        setDrinks(drinks.drinks);
-    }
 
     async function getPumps() {
         const response = await getPumpsAndStatus();
@@ -184,24 +198,21 @@ function PumpSettings(props) {
     }
 
     function refresh() {
-        setDrinks(undefined);
         setPumps(undefined);
-        getDrinks();
         getPumps();
     }
 
     useEffect(() => {
-        getDrinks();
         getPumps();
     }, []);
 
     return (
         <div className="pump-settings">
             <div className="pumps">
-                {pumps && drinks ? (
+                {pumps ? (
                     pumps.map((pumpObj, index) => {
                         return (
-                        <PumpSetting key={index} pumpNumber={pumpObj.id} selectedDrink={pumpObj.select} drinks={drinks} />
+                        <PumpSetting key={index} pumpNumber={pumpObj.id} selectedDrink={pumpObj.select} />
                         )
                     })
                 ) : <div>Loading...</div>}

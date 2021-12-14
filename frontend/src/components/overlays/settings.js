@@ -114,6 +114,7 @@ function IngredientsCategorySelector(props) {
 
     return (
         <select className="ingredients-category-selector" value={currentCategory} onChange={handleChange}>
+            <option value=''>Select category</option>
             {categories ? categories.map((category) => <option key={category} value={category}>{category}</option>) : <option>Loading...</option>}
         </select>
     )
@@ -210,18 +211,22 @@ function PumpSettings(props) {
     )
 }
 
-function AddIngredient() {
+function AddIngredient(props) {
     const [selectedCategory, setSelectedCategory] = useState();
     const [ingredientsName, setIngredientsName] = useState();
     const [locked, setLocked] = useState(false);
 
+    const closecb = props.closecb;
+
     async function onSubmit(event) {
         event.preventDefault();
-        setLocked(true);
         if (!(ingredientsName && selectedCategory)) return;
-        const addedIngredient = await addIngredient(selectedCategory, ingredientsName);
+        setLocked(true);
+        const password = getPasswordCookie();
+        const addedIngredient = await addIngredient(password, ingredientsName, selectedCategory);
         if (addedIngredient) setIngredientsName();
         setLocked(false);
+        closecb();
     }
 
     function handleChange(event) {
@@ -263,7 +268,7 @@ function SettingsHidden() {
             <PumpSettings />
             {showRemoveDrink ? <RemoveDrink /> : <DangerButton onClick={() => setShowRemoveDrink(true)}>Remove Drink</DangerButton>}
             {showRemoveIngredient ? <RemoveIngredient /> : <DangerButton onClick={() => setShowRemoveIngredient(true)}>Remove Ingredient</DangerButton>}
-            {showAddIngredient ? <AddIngredient /> : <NormalButton onClick={() => setShowAddIngredient(true)}>Add Ingredient</NormalButton>}
+            {showAddIngredient ? <AddIngredient closecb={() => setShowAddIngredient(false)}/> : <NormalButton onClick={() => setShowAddIngredient(true)}>Add Ingredient</NormalButton>}
         </div>
     );
 }

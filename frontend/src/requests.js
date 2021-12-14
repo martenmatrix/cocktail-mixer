@@ -103,8 +103,23 @@ async function setPumpSelectionStatus(password, pumpNumber, newSelection) {
 }
 
 async function addIngredient(password, ingredient, category) {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    return true;
+    try {
+        const response = await fetch(BACKEND_LINK + 'drink/addIngredient', {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'  
+            },
+            body: JSON.stringify({ password, ingredient, category }),
+        });
+        const json = await response.json();
+        return json;
+    } catch (e) {
+        console.error(e);
+        return { 
+            error: e,
+            success: false 
+        };
+    }
 }
 
 export { getStatus, checkPassword, getPumpsAndStatus, getPossibleDrinks, setPumpSelectionStatus, addIngredient }; 

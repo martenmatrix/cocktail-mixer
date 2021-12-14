@@ -1,18 +1,1 @@
-{
-    "juice": [
-        "Passion fruit",
-        "Orange"
-    ],
-    "softdrink": [
-        "Ginger Ale"
-    ],
-    "alcohol": [
-        "Vodka"
-    ],
-    "unableToPump": [
-        "Lime",
-        "Brown cane sugar",
-        "Ice",
-        "crushed Ice"
-    ]
-}
+{"juice":["Passion fruit","Orange"],"softdrink":["Ginger Ale","alsogood","Coca Cola"],"alcohol":["Vodka","cock","cock"],"unableToPump":["Lime","Brown cane sugar","Ice","crushed Ice"]}

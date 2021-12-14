@@ -1,6 +1,8 @@
 const cors = require('cors');
 const dotenv = require('dotenv');
 const fs = require('fs');
+const checkPassword = require('./misc');
+
 const result = dotenv.config({
   path: '../.env'
 });
@@ -20,19 +22,6 @@ app.use(cors());
 const drinkRoute = require('./routes/drinks');
 app.use('/drink', drinkRoute);
 app.use(cors({origin: '*'}));
-
-function checkPassword(password) {
-  const response = {
-    correct: false
-  }
-  const validPassword = process.env.SETTINGS_PASSWORD;
-  
-  if (validPassword === password) {
-    response.correct = true;
-  }
-
-  return response;
-}
 
 app.get('/status', (req, res) => {
     const response = {

@@ -79,16 +79,27 @@ function Password(props) {
 
 }
 
+function useAvaibleIngredients() {
+    const [ingredients, setIngredients] = useState();
+
+    useEffect(() => {
+        async function getIngredients() {
+            const response = await getPossibleDrinks();
+            setIngredients(response.drinks);
+        }
+
+        getIngredients();
+    }, []);
+
+    return ingredients;
+}
+
 function IngredientsSelector(props) {
     const onChange = props.onChange;
     const startDrink = props.selectedDrink;
-    const [ingredients, setIngredients] = useState();
     const [selectedDrink, setSelectedDrink] = useState();
 
-    async function getIngredients() {
-        const drinks = await getPossibleDrinks();
-        setIngredients(drinks.drinks);
-    }
+    const ingredients = useAvaibleIngredients();
 
     useEffect(() => {
         if (!startDrink)
@@ -96,10 +107,6 @@ function IngredientsSelector(props) {
         else
             setSelectedDrink(startDrink);
     }, [startDrink]);
-
-    useEffect(() => {
-        getIngredients();
-    }, []);
 
     function handleChange(event) {
         const newInput = event.target.value;
@@ -185,7 +192,12 @@ function PumpSetting(props) {
         setPumpSelectionStatus(currentPassword, pumpNumber, newInput);
     }
 
-    return <IngredientsSelector onChange={setSelection} selectedDrink={props.selectedDrink} />
+    return (
+        <div className="pump-setting">
+            <div>{formattedName}</div>
+            <IngredientsSelector onChange={setSelection} selectedDrink={props.selectedDrink} />
+        </div>
+        );
 }
 
 function PumpSettings() {

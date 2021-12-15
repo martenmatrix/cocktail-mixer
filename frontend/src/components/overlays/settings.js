@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { checkPassword, getPumpsAndStatus, getPossibleDrinks, setPumpSelectionStatus, addIngredient } from "../../requests";
+import { getStatus, checkPassword, getPumpsAndStatus, getPossibleDrinks, setPumpSelectionStatus, addIngredient, removeIngredient } from "../../requests";
 import { NormalButton, DangerButton } from "./buttons";
 import './../styles/settings.css';
 
@@ -268,6 +268,7 @@ function AddIngredient(props) {
                     <IngredientsCategorySelector onChange={setSelectedCategory} selectedCategory={selectedCategory}/>
                     <input type="submit" value="Add" required/>
                 </form>
+                <DangerButton onClick={closecb}>Cancel</DangerButton>
             </div>
         )
     }
@@ -277,21 +278,95 @@ function RemoveDrink() {
     return <DangerButton>Remove Drink</DangerButton>;
 }
 
-function RemoveIngredient() {
-    return <DangerButton>Remove Ingredient</DangerButton>;
+function RemoveIngredient(props) {
+    const [locked, setLocked] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState();
+    const [selectedIngredient, setSelectedIngredient] = useState();
+    const closecb = props.closecb;
+
+    async function onSubmit()  {
+        if (!selectedIngredient || (selectedIngredient === 'empty')) return;
+        setLocked(true);
+        const password = getPasswordCookie();
+        await removeIngredient(password, selectedIngredient, selectedCategory);
+        closecb();
+        setLocked(false);
+    }
+
+    function handleChange(event) {
+        const newInput = event.target.value;
+        setSelectedIngredient(newInput);
+        const selectedIndex = event.currentTarget.selectedIndex;
+        const selectedOptionElement = event.currentTarget[selectedIndex];
+        const selectedOptgroup = selectedOptionElement.parentElement;
+        const category = selectedOptgroup.label;
+        setSelectedCategory(category);
+    }
+    
+    return locked ? <div>Deleting...</div> : 
+    <div className="ingredient delete">
+        <IngredientsSelector onChange={handleChange}/>
+        <DangerButton onClick={onSubmit}>Remove Ingredient</DangerButton>
+        <DangerButton onClick={closecb}>Cancel</DangerButton>
+    </div>;
+}
+
+function Debug() {
+    const [status, setStatus] = useState();
+    const [pumps, setPumps] = useState();
+    const [drinks, setDrinks] = useState();
+
+    function getString(object) {
+        return JSON.stringify(object, null, 2);
+    }
+
+    async function refresh() {
+        const status = await getStatus();
+        setStatus(getString(status));
+        const pumps = await getPumpsAndStatus();
+        setPumps(getString(pumps));
+        const drinks = await getPossibleDrinks();
+        setDrinks(getString(drinks));
+    }
+
+    useState(() => {
+        refresh();
+        const intervalID = setInterval(refresh, 1000);
+
+        return () => clearInterval(intervalID);
+    })
+
+    return (
+        <div className="debug-values">
+            <div className="debug-container">
+                <div className="debug-title">Status</div>
+                <pre className="debug-value">{status}</pre>
+            </div>
+            <div className="debug-container">
+                <div className="debug-title">Pumps</div>
+                <pre className="debug-value">{pumps}</pre>
+            </div>
+            <div className="debug-container">
+                <div className="debug-title">Drinks</div>
+                <pre className="debug-value">{drinks}</pre>
+            </div>
+        </div>
+    );
 }
 
 function SettingsHidden() {
     const [showRemoveDrink, setShowRemoveDrink] = useState(false);
     const [showRemoveIngredient, setShowRemoveIngredient] = useState(false);
     const [showAddIngredient, setShowAddIngredient] = useState(false);
+    const [showDebug, setShowDebug] = useState(false);
 
     return (
         <div className="settings-hidden">
             <PumpSettings />
             {showRemoveDrink ? <RemoveDrink /> : <DangerButton onClick={() => setShowRemoveDrink(true)}>Remove Drink</DangerButton>}
-            {showRemoveIngredient ? <RemoveIngredient /> : <DangerButton onClick={() => setShowRemoveIngredient(true)}>Remove Ingredient</DangerButton>}
+            {showRemoveIngredient ? <RemoveIngredient closecb={() => setShowRemoveIngredient(false)}/> : <DangerButton onClick={() => setShowRemoveIngredient(true)}>Remove Ingredient</DangerButton>}
             {showAddIngredient ? <AddIngredient closecb={() => setShowAddIngredient(false)}/> : <NormalButton onClick={() => setShowAddIngredient(true)}>Add Ingredient</NormalButton>}
+            {showDebug ? <Debug /> : <NormalButton onClick={() => setShowDebug(true)}>Debug</NormalButton>}
         </div>
     );
 }

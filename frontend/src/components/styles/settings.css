@@ -45,6 +45,10 @@
     background: white;
 }
 
+.settings-menu .settings-hidden {
+    overflow: auto;
+}
+
 .settings-container > * {
     margin: 1em;
 }
@@ -116,4 +120,22 @@
     margin: 0 auto;
     width: 100%;
     flex-wrap: wrap;
+}
+
+.ingredient.delete {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.debug-values {
+    overflow: auto;
+    height: 30rem;
+    border: 1px solid black;
+}
+
+.debug-value {
+    overflow: scroll;
+    border: 1px solid black;
 }

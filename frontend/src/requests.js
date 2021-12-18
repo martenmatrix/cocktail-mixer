@@ -142,4 +142,51 @@ async function removeIngredient(password, ingredient, category) {
     }
 }
 
-export { getStatus, checkPassword, getPumpsAndStatus, getPossibleDrinks, setPumpSelectionStatus, addIngredient, removeIngredient }; 
+async function getCategories() {
+    try {
+        const response = await fetch(BACKEND_LINK + 'drink/categories');
+        const json = await response.json();
+
+        if (response.status !== 200) {
+            throw new Error(json.error);
+        }
+        return {
+            categories: json,
+            success: true
+        }
+    } catch (e) {
+        return { 
+            error: e,
+            success: false 
+        };
+    }
+}
+
+async function getDrinks(category) {
+    try {
+        const response = await fetch(BACKEND_LINK + 'drink/drinksOfCategory', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ category }),
+        });
+        const json = await response.json();
+
+        if (response.status !== 200) {
+            throw new Error(json.error);
+        }
+        return {
+            drinks: json,
+            success: true
+        }
+    } catch (e) {
+        return { 
+            error: e,
+            success: false 
+        };
+    }
+}
+
+export { getStatus, checkPassword, getPumpsAndStatus, getPossibleDrinks, setPumpSelectionStatus, addIngredient, removeIngredient,
+        getCategories, getDrinks }; 

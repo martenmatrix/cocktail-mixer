@@ -1,19 +1,18 @@
 const DrinksDatabase = require('../databaseHandler');
 const checkPassword = require('../misc');
+const ingredientsJSONPATH = './data/ingredients.json';
 
 const express = require('express');
 const fs = require('fs');
 
 const router = express.Router();
 
-const db = new DrinksDatabase();
-
 router.get('/make', (req, res) => {
     res.send('Already making a drink.');
 });
 
 router.get('/ingredients', (req, res) => {
-    fs.readFile("../data/ingredients.json", "utf8", (error, jsonString) => {
+    fs.readFile(ingredientsJSONPATH, "utf8", (error, jsonString) => {
         if (error) {
           res.status(500);
           res.send({ error: error.message });
@@ -40,7 +39,7 @@ router.patch('/addIngredient', async (req, res) => {
     const category = req.body.category;
     const newIngredient = req.body.ingredient;
 
-    const currentIngredients = await fs.promises.readFile("../data/ingredients.json", "utf8"). catch(error => {
+    const currentIngredients = await fs.promises.readFile(ingredientsJSONPATH, "utf8"). catch(error => {
         res.status(500);
         res.send({ error: error.message });
         return;
@@ -55,7 +54,7 @@ router.patch('/addIngredient', async (req, res) => {
     const newObject = {...JSON.parse(currentIngredients)};
     newObject[category].push(newIngredient);
 
-    await fs.promises.writeFile("../data/ingredients.json", JSON.stringify(newObject)).catch(error => {
+    await fs.promises.writeFile(ingredientsJSONPATH, JSON.stringify(newObject)).catch(error => {
         res.status(500);
         res.send({ error: error.message });
         return;
@@ -82,7 +81,7 @@ router.patch('/removeIngredient', async (req, res) => {
     const category = req.body.category;
     const deleteIngredient = req.body.ingredient;
 
-    const currentIngredients = await fs.promises.readFile("../data/ingredients.json", "utf8"). catch(error => {
+    const currentIngredients = await fs.promises.readFile(ingredientsJSONPATH, "utf8"). catch(error => {
         res.status(500);
         res.send({ error: error.message });
         return;
@@ -98,7 +97,7 @@ router.patch('/removeIngredient', async (req, res) => {
     const newArray = newObject[category].filter(ingredient => ingredient !== deleteIngredient);
     newObject[category] = newArray;
 
-    await fs.promises.writeFile("../data/ingredients.json", JSON.stringify(newObject)).catch(error => {
+    await fs.promises.writeFile(ingredientsJSONPATH, JSON.stringify(newObject)).catch(error => {
         res.status(500);
         res.send({ error: error.message });
         return;
@@ -107,6 +106,20 @@ router.patch('/removeIngredient', async (req, res) => {
     res.status(200);
     response.success = true;
     res.send(response);
+});
+
+// DrinksDatabase
+router.get('/categories', async (req, res) => {
+    const categories = await DrinksDatabase.getAllDrinksCategories();
+    res.status(200);
+    res.send(categories);
+});
+
+router.post('/drinksOfCategory', async (req, res) => {
+    const category = req.body.category;
+    const drinks = await DrinksDatabase.getAllDrinksFromCategory(category);
+    res.status(200);
+    res.send(drinks);
 });
 
 module.exports = router;

@@ -1,0 +1,7 @@
+.main {
+    border: 1px solid black;
+    border-radius: 0.5rem;
+    box-shadow: 0 0 1rem #888888;
+    margin: 1rem;
+    display: flex;
+}

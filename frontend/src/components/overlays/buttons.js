@@ -22,4 +22,15 @@ function NormalButton(props) {
     )
 }
 
-export { DangerButton, NormalButton };
+function AttentionButton(props) {
+    const text = props.children;
+    const cb = props.onClick;
+
+    return (
+        <div className="button attention" onClick={cb}>
+            {text}
+        </div>
+    )
+}
+
+export { DangerButton, NormalButton, AttentionButton };

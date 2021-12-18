@@ -2,9 +2,10 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const fs = require('fs');
 const checkPassword = require('./misc');
+const pumpsJSONPATH = './data/pumps.json';
 
 const result = dotenv.config({
-  path: '../.env'
+  path: './.env'
 });
 if (result.error) {
   throw result.error;
@@ -33,7 +34,7 @@ app.get('/status', (req, res) => {
 });
 
 app.get('/pumps', (req, res) => {
-    fs.readFile("../data/pumps.json", "utf8", (error, jsonString) => {
+    fs.readFile(pumpsJSONPATH, "utf8", (error, jsonString) => {
       if (error) {
         res.status(500);
         res.send({ error: error.message });
@@ -61,7 +62,7 @@ app.patch('/setPump', (req, res) => {
     };
 
     if(checkPassword(password).correct) {
-      const currentPumpStatus = JSON.parse(fs.readFileSync('../data/pumps.json', 'utf8'));
+      const currentPumpStatus = JSON.parse(fs.readFileSync(pumpsJSONPATH, 'utf8'));
       const newPumpsArray = currentPumpStatus.pumps.map(pump => {
         if(pump.id === selectedPumpID) {
           pump.select = newSelection;
@@ -69,7 +70,7 @@ app.patch('/setPump', (req, res) => {
         return pump;
       });
 
-      fs.writeFile("../data/pumps.json", JSON.stringify({pumps: newPumpsArray}), (error) => {
+      fs.writeFile(pumpsJSONPATH, JSON.stringify({pumps: newPumpsArray}), (error) => {
         if (error) {
           res.status(500);
           res.send({ error: error.message });

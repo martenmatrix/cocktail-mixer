@@ -11,7 +11,7 @@ function App() {
 
   return (
     <div className="App">
-      <SettingsMenu show={showSettings} cbToClose={() => setShowSettings(false)}/>
+      {showSettings ? <SettingsMenu cbToClose={() => setShowSettings(false)}/> : null}
       <Header cbShowSettings={() => setShowSettings(true)}/>
       <Main/>
       <Footer/>

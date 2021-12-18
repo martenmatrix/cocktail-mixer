@@ -12,25 +12,6 @@
     100% { transform: translate(1px, -2px) rotate(-1deg); }
 }
 
-.settings-menu {
-    transition: opacity 100ms;
-    pointer-events: none;
-    opacity: 0;
-
-    position: absolute;
-    width: 100%;
-    height: 100%;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.settings-menu.active {
-    pointer-events: auto;
-    opacity: 1;
-}
-
 .settings-menu .settings-container {
     display: flex;
     flex-direction: column;
@@ -51,15 +32,6 @@
 
 .settings-container > * {
     margin: 1em;
-}
-
-.blur-background {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-
-    z-index: -1;
 }
 
 .password-input {

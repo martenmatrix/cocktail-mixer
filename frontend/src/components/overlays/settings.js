@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getStatus, checkPassword, getPumpsAndStatus, getPossibleDrinks, setPumpSelectionStatus, addIngredient, removeIngredient } from "../../requests";
 import { NormalButton, DangerButton } from "./buttons";
+import { WhiteContentOverlay } from "./overlays";
 import './../styles/settings.css';
 
 function setPasswordCookie(password) {
@@ -10,25 +11,6 @@ function setPasswordCookie(password) {
 function getPasswordCookie() {
     return localStorage.getItem('password');
 }
-
-function BlurBackground() {
-    // add pointer events on mount and unmount?
-
-    return (
-        <div className="blur-background">
-        </div>
-    )
-}
-
-function CloseButton(props) {
-    const cbWhenPressed = props.cbWhenPressed;
-
-    return (
-        <button className="close-button" onClick={cbWhenPressed}>
-        </button>
-    )
-}
-
 
 function Password(props) {
     const [password, setPassword] = useState('');
@@ -374,21 +356,16 @@ function SettingsHidden() {
 function SettingsMenu(props) {
     const [accessGranted, setAccessGranted] = useState(false);
     const cbToClose = props.cbToClose;
-    const showSettings = props.show;
 
     function grantAccess() {
         setAccessGranted(true);
     }
 
     return (
-        <div className={`settings-menu ${showSettings ? 'active' : ''}`}>
-            <BlurBackground />
-            <div className="settings-container">
-                {accessGranted ? <SettingsHidden /> : <Password cbWhenCorrect={grantAccess}/>}
-                <CloseButton cbWhenPressed={cbToClose}/>
-            </div>
-        </div>
-    )
+        <WhiteContentOverlay cbToClose={cbToClose}>
+            {accessGranted ? <SettingsHidden /> : <Password cbWhenCorrect={grantAccess}/>}
+        </WhiteContentOverlay>
+    );
 }
 
 export default SettingsMenu;

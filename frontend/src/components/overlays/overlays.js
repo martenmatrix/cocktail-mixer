@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import './../styles/overlays.css';
 
 function CloseButton(props) {
@@ -21,13 +22,41 @@ function BlurBackground() {
 function WhiteContentOverlay(props) {
     const content = props.children;
     const closecb = props.cbToClose;
+    const [opacity, setOpacity] = useState(0);
+
+    useEffect(() => {
+        setTimeout(
+            () => {
+                setOpacity(1);
+            }, 50
+        )
+    }, [])
+
+    useEffect(() => {
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Escape') handleClose();
+        });
+    
+        return () => {
+            document.removeEventListener('keydown', (e) => {
+                if (e.code === 'Escape') handleClose();
+            });
+        }
+    }, [])
+
+    function handleClose() {
+        setOpacity(0);
+        setTimeout(closecb, 200);
+    }
 
     return (
-        <div className='white-content-overlay'>
+        <div className='white-content-overlay' style={{
+            opacity: opacity
+        }}>
             <BlurBackground />
             <div className="settings-container">
                 {content}
-                <CloseButton cbWhenPressed={closecb}/>
+                <CloseButton cbWhenPressed={handleClose}/>
             </div>
         </div>
     );

@@ -1,7 +1,7 @@
 const cors = require('cors');
 const dotenv = require('dotenv');
 const fs = require('fs');
-const checkPassword = require('./misc');
+const checkPassword = require('./misc').checkPassword;
 const pumpsJSONPATH = './data/pumps.json';
 
 const result = dotenv.config({
@@ -86,7 +86,7 @@ app.patch('/setPump', (req, res) => {
     }
 });
 
-app.post('/password', (req, res) => {
+app.post('/password', async (req, res) => {
   const response = checkPassword(req.body.password);
   res.status(200);
   res.send(response);

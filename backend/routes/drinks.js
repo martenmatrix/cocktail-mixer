@@ -1,5 +1,6 @@
 const DrinksDatabase = require('../databaseHandler');
-const checkPassword = require('../misc');
+const checkPassword = require('../misc').checkPassword;
+const getCategoryOfIngredient = require('../misc').getCategoryOfIngredient;
 const ingredientsJSONPATH = './data/ingredients.json';
 
 const express = require('express');
@@ -109,17 +110,40 @@ router.patch('/removeIngredient', async (req, res) => {
 });
 
 // DrinksDatabase
-router.get('/categories', async (req, res) => {
-    const categories = await DrinksDatabase.getAllDrinksCategories();
-    res.status(200);
-    res.send(categories);
-});
+router.patch('/add', async (req, res) => {
+    const name = req.body.name;
+    const ingredients = req.body.ingredients;
 
-router.post('/drinksOfCategory', async (req, res) => {
-    const category = req.body.category;
-    const drinks = await DrinksDatabase.getAllDrinksFromCategory(category);
+    // get all categories and check if it contains alcohol
+    let hasAlcohol = false;
+    const ingredientsWithCategory = await Promise.all(ingredients.map(async (ingredient) => {
+        const nameOfIngredient = ingredient.ingredient;
+        const category = await getCategoryOfIngredient(nameOfIngredient);
+
+        if (category === 'alcohol') {
+            hasAlcohol = true;
+        }
+
+        return {
+            ...ingredient,
+            ...{category}
+        }
+    }));
+
+    const idOfDrink = await DrinksDatabase.createDrink(name, hasAlcohol);
+    await Promise.all(ingredientsWithCategory.map(async (ingredient) => {
+        await DrinksDatabase.addIngredient(idOfDrink, ingredient.ingredient, ingredient.category, ingredient.amount, ingredient.unit);
+    })).catch((error) => {
+        res.status(500);
+        res.send({ error: error.message });
+        return;
+    });
+
     res.status(200);
-    res.send(drinks);
+    res.send({
+        success: true,
+        id: idOfDrink
+    });
 });
 
 module.exports = router;

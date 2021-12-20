@@ -33,4 +33,23 @@ function AttentionButton(props) {
     )
 }
 
-export { DangerButton, NormalButton, AttentionButton };
+function RemoveButton(props) {
+    const text = props.children;
+    const cb = props.onClick;
+
+    return (
+        <button onClick={cb} className="remove">
+            {text}
+        </button>
+    )
+}
+
+function AddButton(props) {
+    return (
+        <button class="icon-btn add-btn">
+            <div class="add-icon"></div>
+            <div class="btn-txt">Remove</div>
+        </button>
+    )
+}
+export { DangerButton, NormalButton, AttentionButton, RemoveButton, AddButton };

@@ -11,7 +11,7 @@ class DrinksDatabase {
     static async createTables() {
 
         const createDrinks = new Promise((resolve, reject) => {
-            drinksDatabase.run('CREATE TABLE IF NOT EXISTS drinks (id INTEGER PRIMARY KEY, name TEXT, categoryOfDrink TEXT)', (err) => {
+            drinksDatabase.run('CREATE TABLE IF NOT EXISTS drinks (id INTEGER PRIMARY KEY, name TEXT, hasAlcohol BOOLEAN)', (err) => {
                 if (err) {
                     reject(err);
                 }
@@ -34,10 +34,10 @@ class DrinksDatabase {
         return Math.floor(+Date.now() + Math.random());
     }
 
-    static async createDrink(name, category = null) {
+    static async createDrink(name, hasAlcohol) {
         const newID = this.getID();
         return new Promise((resolve, reject) => {
-            drinksDatabase.run('INSERT INTO drinks (id, name, categoryOfDrink) VALUES (?, ?)', [newID, name, category], (err) => {
+            drinksDatabase.run('INSERT INTO drinks (id, name, hasAlcohol) VALUES (?, ?, ?)', [newID, name, hasAlcohol], (err) => {
                 if (err) {
                     reject(err);
                 }
@@ -68,31 +68,9 @@ class DrinksDatabase {
         });
     }
 
-    static async getAllDrinksCategories() {
-        return new Promise((resolve, reject) => {
-            drinksDatabase.all('SELECT DISTINCT categoryOfDrink FROM drinks', (err, rows) => {
-                if (err) {
-                    reject(err);
-                }
-                resolve(rows);
-            });
-        });
-    }
-
     static async getAllIngredientsCategories() {
         return new Promise((resolve, reject) => {
             drinksDatabase.all('SELECT DISTINCT categoryOfIngredient FROM ingredients', (err, rows) => {
-                if (err) {
-                    reject(err);
-                }
-                resolve(rows);
-            });
-        });
-    }
-
-    static async getAllDrinksFromCategory(category) {
-       return new Promise((resolve, reject) => {
-            drinksDatabase.all('SELECT * FROM drinks WHERE categoryOfDrink = ?', [category], (err, rows) => {
                 if (err) {
                     reject(err);
                 }

@@ -369,3 +369,4 @@ function SettingsMenu(props) {
 }
 
 export default SettingsMenu;
+export { IngredientsSelector, IngredientsCategorySelector };

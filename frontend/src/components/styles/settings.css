@@ -103,11 +103,18 @@
 
 .debug-values {
     overflow: auto;
-    height: 30rem;
+    height: 20vh;
     border: 1px solid black;
 }
 
 .debug-value {
     overflow: scroll;
     border: 1px solid black;
+}
+
+.remove-drink-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
 }

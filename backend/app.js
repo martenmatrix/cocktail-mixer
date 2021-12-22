@@ -1,7 +1,10 @@
 const cors = require('cors');
 const dotenv = require('dotenv');
 const fs = require('fs');
+const showOnDisplay = require('./raspberry').showOnDisplay;
+const activatePump = require('./raspberry').activatePump;
 const checkPassword = require('./misc').checkPassword;
+const getTask = require('./currentTask').getTask;
 const pumpsJSONPATH = './data/pumps.json';
 
 const result = dotenv.config({
@@ -25,12 +28,11 @@ app.use('/drink', drinkRoute);
 app.use(cors({origin: '*'}));
 
 app.get('/status', (req, res) => {
-    const response = {
-        task: 'Idle'
-    }
-    
+    const status = getTask();
     res.status(200);
-    res.send(response);
+    res.send({
+      task: status
+    });
 });
 
 app.get('/pumps', (req, res) => {
@@ -90,6 +92,31 @@ app.post('/password', async (req, res) => {
   const response = checkPassword(req.body.password);
   res.status(200);
   res.send(response);
+});
+
+
+let lastRequests = [
+  Promise.resolve(),
+  Promise.resolve(),
+  Promise.resolve(),
+  Promise.resolve(),
+  Promise.resolve(),
+  Promise.resolve(),
+  Promise.resolve(),
+  Promise.resolve(),
+];
+
+app.post('/startPump', async (req, res) => {
+    res.status(200);
+    res.send({success: true});
+    const pumpID = req.body.id;
+    const timeInMs = req.body.time;
+
+    const response = await Promise.race([lastRequests[pumpID - 1], 'loading']);
+    if (response === 'loading') return;
+
+    const promise = activatePump(pumpID, timeInMs);
+    lastRequests[pumpID - 1] = promise;
 });
 
 // get ip with -hostname I

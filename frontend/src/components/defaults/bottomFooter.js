@@ -1,8 +1,8 @@
 import '../styles/bottomFooter.css';
 import { useState, useEffect } from 'react';
-import { AttentionButton, RemoveButton, NormalButton } from '../../components/overlays/buttons';
+import { AttentionButton, RemoveButton } from '../../components/overlays/buttons';
 import { WhiteContentOverlay } from '../../components/overlays/overlays';
-import { getPossibleUnits, createDrink } from '../../requests';
+import { getPumpsAndStatus, getPossibleUnits, createDrink, startPump } from '../../requests';
 import { IngredientsSelector } from './../../components/overlays/settings';
 
 function UnitSelector(props) {
@@ -164,9 +164,9 @@ function AddDrinkComponent(props) {
     }
 
     async function submit() {
-        setBlockInput(true);
         const correctFormatting = validateInput();
         if (correctFormatting) {
+            setBlockInput(true);
             const newDrink = {
                 name,
                 ingredients
@@ -178,8 +178,10 @@ function AddDrinkComponent(props) {
                 setName('');
                 setIngredients([]);
             }
+            setBlockInput(false);
+        } else {
+            alert('Please fill out all fields');
         }
-        setBlockInput(false);
     }
 
     if (blockInput) return (
@@ -224,9 +226,74 @@ function AddDrinkComponent(props) {
 }
 
 function CustomComponent(props) {
+    const [pumpInterval, setPumpInterval] = useState([
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+    ]);
+    const [pumpState, setPumpState] = useState();
+
+    useEffect(() => {
+        async function getPumpState() {
+            const response = await getPumpsAndStatus();
+            setPumpState(response.json.pumps);
+        }
+        getPumpState();
+    }, []);
+
+    function startInterval(idOfPump) {
+        const intervalID = setInterval(() => {
+            startPump(idOfPump, 500);
+        }, 500);
+
+        setPumpInterval((prevState) => {
+            const newState = [...prevState];
+            newState[idOfPump - 1] = intervalID;
+            return newState;
+        });
+    }
+
+    function cancelTimeout(idOfPump) {
+        clearInterval(pumpInterval[idOfPump - 1]);
+    }
+
     return (
-        <>
-        </>
+        <div className="custom-buttons">
+            {pumpState ?
+                pumpState.map((pump) => {
+                    const idOfPump = pump.id;
+                    const selectedIngredient = pump.select;
+
+                    return <AttentionButton key={idOfPump}
+                    
+                    onMouseDown={
+                        () => {
+                            startInterval(idOfPump);
+                        }
+                    }
+
+                    onMouseUp={
+                        () => {
+                            cancelTimeout(idOfPump);
+                        }
+                    }
+
+                    onMouseLeave={
+                        () => {
+                            cancelTimeout(idOfPump);
+                        }
+                    }
+                    >{selectedIngredient}</AttentionButton>
+                })
+                :
+                <div>Loading...</div>
+            }
+        </div>
     )
 }
 

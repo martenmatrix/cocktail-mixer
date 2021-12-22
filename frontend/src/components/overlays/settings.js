@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getStatus, checkPassword, getPumpsAndStatus, getPossibleDrinks, setPumpSelectionStatus, addIngredient, removeIngredient } from "../../requests";
+import { getStatus, checkPassword, getPumpsAndStatus, getPossibleDrinks, setPumpSelectionStatus, addIngredient, removeIngredient, getAllDrinks, deleteDrink } from "../../requests";
 import { NormalButton, DangerButton } from "./buttons";
 import { WhiteContentOverlay } from "./overlays";
 import './../styles/settings.css';
@@ -256,8 +256,57 @@ function AddIngredient(props) {
     }
 }
 
-function RemoveDrink() {
-    return <DangerButton>Remove Drink</DangerButton>;
+function RemoveDrink(props) {
+    const [drinks, setDrinks] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [selectedDrink, setSelectedDrink] = useState();
+    const closecb = props.closecb;
+
+    useEffect(()=> {
+        async function getDrinks() {
+            const response = await getAllDrinks();
+            const allDrinks = response.response;
+            setDrinks(allDrinks);
+        }
+
+        getDrinks();
+    }, []);
+
+    function handleChange(e) {
+        const newDrinkID = e.target.value;
+        if (!newDrinkID) return;
+        setSelectedDrink(newDrinkID);
+    }
+
+    async function deleteSelected() {
+        if (!selectedDrink) return;
+
+        setLoading(true);
+        const password = getPasswordCookie();
+        const response = await deleteDrink(password, selectedDrink);
+        setSelectedDrink()
+        setLoading(false);
+        if (response.success) closecb();
+    }
+
+    if (!drinks || loading) {
+        return <div>Loading...</div>
+    }
+
+    return (
+        <div className="remove-drink-section">
+            <select value={selectedDrink} onChange={handleChange}>
+                <option value="">Select Drink</option>
+                {
+                    drinks.map((drink, index) => {
+                        return <option key={index} value={drink.id}>{drink.name}</option>
+                    })
+                }
+            </select>
+            <DangerButton onClick={deleteSelected}>Delete</DangerButton>
+            <DangerButton>Close</DangerButton>
+        </div>
+    );
 }
 
 function RemoveIngredient(props) {
@@ -311,12 +360,12 @@ function Debug() {
         setDrinks(getString(drinks));
     }
 
-    useState(() => {
+    useEffect(() => {
         refresh();
         const intervalID = setInterval(refresh, 1000);
 
         return () => clearInterval(intervalID);
-    })
+    });
 
     return (
         <div className="debug-values">
@@ -345,7 +394,7 @@ function SettingsHidden() {
     return (
         <div className="settings-hidden">
             <PumpSettings />
-            {showRemoveDrink ? <RemoveDrink /> : <DangerButton onClick={() => setShowRemoveDrink(true)}>Remove Drink</DangerButton>}
+            {showRemoveDrink ? <RemoveDrink closecb={() => setShowRemoveDrink(false)}/> : <DangerButton onClick={() => setShowRemoveDrink(true)}>Remove Drink</DangerButton>}
             {showRemoveIngredient ? <RemoveIngredient closecb={() => setShowRemoveIngredient(false)}/> : <DangerButton onClick={() => setShowRemoveIngredient(true)}>Remove Ingredient</DangerButton>}
             {showAddIngredient ? <AddIngredient closecb={() => setShowAddIngredient(false)}/> : <NormalButton onClick={() => setShowAddIngredient(true)}>Add Ingredient</NormalButton>}
             {showDebug ? <Debug /> : <NormalButton onClick={() => setShowDebug(true)}>Debug</NormalButton>}

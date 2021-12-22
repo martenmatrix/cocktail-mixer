@@ -1,7 +1,11 @@
 const DrinksDatabase = require('../databaseHandler');
 const checkPassword = require('../misc').checkPassword;
 const getCategoryOfIngredient = require('../misc').getCategoryOfIngredient;
+const activatePump = require('../raspberry').activatePump;
+const setTask = require('../currentTask').setTask;
+const getTask = require('../currentTask').getTask;
 const ingredientsJSONPATH = './data/ingredients.json';
+const pumpsJSONPATH = './data/pumps.json';
 
 const express = require('express');
 const fs = require('fs');
@@ -40,7 +44,7 @@ router.patch('/addIngredient', async (req, res) => {
     const category = req.body.category;
     const newIngredient = req.body.ingredient;
 
-    const currentIngredients = await fs.promises.readFile(ingredientsJSONPATH, "utf8"). catch(error => {
+    const currentIngredients = await fs.promises.readFile(ingredientsJSONPATH, "utf8").catch(error => {
         res.status(500);
         res.send({ error: error.message });
         return;
@@ -82,7 +86,7 @@ router.patch('/removeIngredient', async (req, res) => {
     const category = req.body.category;
     const deleteIngredient = req.body.ingredient;
 
-    const currentIngredients = await fs.promises.readFile(ingredientsJSONPATH, "utf8"). catch(error => {
+    const currentIngredients = await fs.promises.readFile(ingredientsJSONPATH, "utf8").catch(error => {
         res.status(500);
         res.send({ error: error.message });
         return;
@@ -146,4 +150,115 @@ router.patch('/add', async (req, res) => {
     });
 });
 
+
+router.get('/all', async (req, res) => {
+    const allDrinks = await DrinksDatabase.getAllDrinks();
+    res.status(200);
+    res.send(allDrinks);
+});
+
+function getUnitInMl(unit) {
+    switch (unit) {
+        case 'ml':
+            return 1;
+        case 'cl':
+            return 10;
+        case 'tsp':
+            return 5;
+        case 'tbsp':
+            return 15;
+        default:
+            return 1;
+    }
+}
+
+async function getPumpWithIngredient(ingredient) {
+    const response = await fs.promises.readFile(pumpsJSONPATH, 'utf8').catch((error) => console.error(error));
+    const pumpSettingsArray = JSON.parse(response).pumps;
+
+    const ingredientIndex = pumpSettingsArray.findIndex((object) => object.select === ingredient);
+    if (ingredientIndex === -1) {
+        console.error(`Ingredient ${ingredient} not avaible.`);
+        return -1;
+    }
+
+    return pumpSettingsArray[ingredientIndex].id;
+}
+
+function getPumpRate(pumpID) {
+    // ml per second
+    pumpID = parseInt(pumpID);
+
+    switch (pumpID) {
+        case 1:
+            return process.env.RATE_PUMP_1;
+        case 2:
+            return process.env.RATE_PUMP_2;
+        case 3:
+            return process.env.RATE_PUMP_3;
+        case 4:
+            return process.env.RATE_PUMP_4;
+        case 5:
+            return process.env.RATE_PUMP_5;
+        case 6:
+            return process.env.RATE_PUMP_6;
+        case 7:
+            return process.env.RATE_PUMP_7;
+        case 8:
+            return process.env.RATE_PUMP_8;
+    }
+}
+
+router.post('/make', async (req, res) => {
+    const currentTask = getTask();
+    if (currentTask !== 'Idle') {
+        res.status()
+    };
+    setTask('Mixing');
+
+    const idOfDrink = req.body.id;
+    const ingredients = await DrinksDatabase.getIngredients(idOfDrink);
+    const notAdded = [];
+    await Promise.all(ingredients.map(async (ingredient) => {
+
+        const pumpID = await getPumpWithIngredient(ingredient.ingredient);
+        if (pumpID === -1) {
+            notAdded.push(ingredient);
+            return;
+        }
+
+        console.log(ingredient);
+        const unit = ingredient.unitOfMeasurement;
+        const amount = ingredient.amountOfIngredient;
+
+        const convertRate = getUnitInMl(unit);
+        const mlToDispense = amount * convertRate;
+        const pumpRateMlPerSecond = parseInt(getPumpRate(pumpID));
+
+        const activationTimeInSeconds = mlToDispense / pumpRateMlPerSecond;
+        const activationTime = activationTimeInSeconds * 1000;
+        await activatePump(pumpID, activationTime);
+    }));
+    res.status(200);
+    res.send({notAdded});
+    setTask('Idle');
+});
+
+router.delete('/remove', async (req, res) => {
+    const password = req.body.password;
+    const drinkID = req.body.id;
+
+    if (!(checkPassword(password).correct)) {
+        res.status(401);
+    }
+
+    try {
+        await DrinksDatabase.removeDrink(drinkID);
+        res.status(200);
+        res.send({success: true})
+    } catch(error) {
+        res.status(500);
+        res.send({error: error.message})
+    }
+});
 module.exports = router;

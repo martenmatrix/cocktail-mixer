@@ -46,6 +46,28 @@ class DrinksDatabase {
         });
     }
 
+    static async removeDrink(id) {
+        const deleteIngredients = new Promise((resolve, reject) => {
+            drinksDatabase.run('DELETE FROM ingredients WHERE id = ?', [id], (err) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve();
+            });
+        });
+
+        const deleteDrink = new Promise((resolve, reject) => {
+            drinksDatabase.run('DELETE FROM drinks WHERE id = ?', [id], (err) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve();
+            });
+        });
+
+        await Promise.all([deleteIngredients, deleteDrink]);
+    }
+
     static async addIngredient(drinkID, ingredient, category, amount, unit) {
         return new Promise((resolve, reject) => {
             drinksDatabase.run('INSERT INTO ingredients (id, ingredient, categoryOfIngredient, amountOfIngredient, unitOfMeasurement) VALUES (?, ?, ?, ?, ?)', [drinkID, ingredient, category, amount, unit], (err) => {
@@ -71,6 +93,17 @@ class DrinksDatabase {
     static async getAllIngredientsCategories() {
         return new Promise((resolve, reject) => {
             drinksDatabase.all('SELECT DISTINCT categoryOfIngredient FROM ingredients', (err, rows) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve(rows);
+            });
+        });
+    }
+
+    static async getAllDrinks() {
+        return new Promise((resolve, reject) => {
+            drinksDatabase.all('SELECT * FROM DRINKS', (err, rows) => {
                 if (err) {
                     reject(err);
                 }

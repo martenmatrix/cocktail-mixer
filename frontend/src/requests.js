@@ -175,5 +175,87 @@ async function getPossibleUnits() {
     ]
 }
 
+async function getUnitInMl(unit) {
+    switch (unit) {
+        case 'ml':
+            return 1;
+        case 'cl':
+            return 10;
+        case 'tsp':
+            return 5;
+        case 'tbsp':
+            return 15;
+        default:
+            return 1;
+    }
+}
+
+async function startPump(pumpNumber, forInMs) {
+    fetch(BACKEND_LINK + 'startPump', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id: pumpNumber, time: forInMs }),
+    });
+}
+
+async function getAllDrinks() {
+    try {
+        const allDrinks = await fetch(BACKEND_LINK + 'drink/all', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+        const allDrinksJSON = await allDrinks.json();
+        return {
+            success: true,
+            response: allDrinksJSON
+        }
+    } catch(e) {
+        return {
+            success: false,
+        }
+    }
+}
+
+async function makeDrink(id) {
+    fetch(BACKEND_LINK + 'drink/make', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({id}),
+    });
+
+    return true;
+}
+
+async function deleteDrink(password, id) {
+    try {
+        const response = await fetch(BACKEND_LINK + 'drink/remove', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                password,
+                id
+            }),
+        });
+
+        return {
+            success: true,
+            response
+        }
+    } catch(e) {
+        return {
+            success: false,
+            error: e
+        }
+    }
+}
+
 export { getStatus, checkPassword, getPumpsAndStatus, getPossibleDrinks, setPumpSelectionStatus, addIngredient, removeIngredient,
-        getPossibleUnits, createDrink }; 
+        getAllDrinks, getPossibleUnits, createDrink, startPump, makeDrink, deleteDrink }; 

@@ -25,9 +25,12 @@ function NormalButton(props) {
 function AttentionButton(props) {
     const text = props.children;
     const cb = props.onClick;
+    const onMouseDown = props.onMouseDown;
+    const onMouseUp = props.onMouseUp;
+    const onMouseLeave = props.onMouseLeave;
 
     return (
-        <div className="button attention" onClick={cb}>
+        <div className="button attention" onClick={cb} onMouseDown={onMouseDown} onMouseUp={onMouseUp} onMouseLeave={onMouseLeave}>
             {text}
         </div>
     )

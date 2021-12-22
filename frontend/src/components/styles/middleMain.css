@@ -4,4 +4,33 @@
     box-shadow: 0 0 1rem #888888;
     margin: 1rem;
     display: flex;
+    width: 80%;
+    margin: 0 auto;
 }
+
+
+.drink-categories {
+    margin: 0 auto;
+    width: 80%;
+}
+
+.drink-category {
+    border: solid 1px black;
+    margin: 1rem 0;
+    width: 100%;
+}
+
+.drink-category .drinks {
+    display: flex;
+    flex-wrap: wrap;
+
+    justify-content: center;
+}
+
+.drink-category .name {
+    background: white;
+    width: 50%;
+    padding: 0 1em;
+    margin: -0.5rem auto 0 auto;
+}
+

@@ -27,6 +27,36 @@
     column-gap: 0.5em;
 }
 
+@keyframes greenPulsate {
+    0%  {     box-shadow:
+                0 0 0px 0px #37880570,  /* inner white */
+                0 0 0px 0px #37880570, /* middle magenta */
+                0 0 0px 0px #37880550; /* outer cyan */ }
+    50%  {     box-shadow:
+                0 0 0.5px 0.2px #37880570,  /* inner white */
+                0 0 2.5px 1px #37880570, /* middle magenta */
+                0 0 3px 2px #37880550; /* outer cyan */ }
+    100% {     box-shadow:
+                0 0 0px 0px #37880570,  /* inner white */
+                0 0 0px 0px #37880570, /* middle magenta */
+                0 0 0px 0px #37880550; /* outer cyan */ }
+}
+
+@keyframes redPulsate {
+    0%  {     box-shadow:
+                0 0 0px 0px #E3242B,  /* inner white */
+                0 0 0px 0px #E3242B, /* middle magenta */
+                0 0 0px 0px #E3242B; /* outer cyan */ }
+    50%  {     box-shadow:
+                0 0 0.5px 0.2px #E3242B70,  /* inner white */
+                0 0 2.5px 1px #E3242B70, /* middle magenta */
+                0 0 3px 2px #E3242B50; /* outer cyan */ }
+    100% {     box-shadow:
+                0 0 0px 0px #E3242B,  /* inner white */
+                0 0 0px 0px #E3242B, /* middle magenta */
+                0 0 0px 0px #E3242B; /* outer cyan */ }
+}
+
 .circle {
     border-radius: 50%;
     width: 0.5em;
@@ -34,9 +64,11 @@
 }
 
 .circle.green {
-    background: #378805
+    background: #378805;
+    animation: greenPulsate 1s linear infinite;
 }
 
 .circle.red {
-    background: #E3242B
+    background: #E3242B;
+    animation: redPulsate 1s linear infinite;
 }

@@ -1,12 +1,23 @@
 import '../styles/middleMain.css';
 import { AttentionButton } from './../../components/overlays/buttons';
-import { getAllDrinks, makeDrink } from './../../requests';
+import { getAllDrinks, makeDrink, getIngredients } from './../../requests';
 import { useState, useEffect } from 'react'; 
 import { WhiteContentOverlay } from '../../components/overlays/overlays';
 
 function FinalDrinkOverview(props) {
     const closecb = props.closecb;
     const drink = props.drink;
+    const [ingredients, setIngredients] = useState();
+
+    useEffect(() => {
+        async function downloadIngredients() {
+            const ingredients = await getIngredients(drink.id);
+            const ingredientsArray = ingredients.response.ingredients;
+            setIngredients(ingredientsArray);
+        }
+
+        downloadIngredients();
+    }, [drink]);
 
     async function pumpDrink() {
         await makeDrink(drink.id);
@@ -16,6 +27,15 @@ function FinalDrinkOverview(props) {
     return (
         <WhiteContentOverlay cbToClose={closecb}>
             <h2 className="title">{drink.name}</h2>
+            <div className='ingredients'>
+                    <ul>
+                        {ingredients ? 
+                        ingredients.map((ingredient, index) => {
+                            return <li key={index}>{`${ingredient.amountOfIngredient} ${ingredient.unitOfMeasurement} ${ingredient.ingredient}`}</li>
+                        })
+                        : null}
+                    </ul>
+            </div>
             <AttentionButton onClick={pumpDrink}>Make Drink</AttentionButton>
         </WhiteContentOverlay>
     )
@@ -91,7 +111,7 @@ function AllDrinkCategories(props) {
         );
     }
     
-    return <div>Loading...</div>
+    return <div className="loading">Loading...</div>
 }
 
 function Main() {

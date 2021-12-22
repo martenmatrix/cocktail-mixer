@@ -5,9 +5,15 @@
     margin: 1rem;
     display: flex;
     width: 80%;
+    height: 70vh;
+
     margin: 0 auto;
+    overflow-y: auto;
 }
 
+.main .loading {
+    margin: 1em auto;
+}
 
 .drink-categories {
     margin: 0 auto;

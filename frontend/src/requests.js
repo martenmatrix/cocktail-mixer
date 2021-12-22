@@ -257,5 +257,27 @@ async function deleteDrink(password, id) {
     }
 }
 
+async function getIngredients(id) {
+    try {
+        const ingredients = await fetch(BACKEND_LINK + 'drink/ingredients', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({id}),
+        });
+        const ingredientsJSON = await ingredients.json();
+        return {
+            success: true,
+            response: ingredientsJSON
+        }
+    } catch(e) {
+        return {
+            success: false,
+            error: e
+        }
+    }
+}
+
 export { getStatus, checkPassword, getPumpsAndStatus, getPossibleDrinks, setPumpSelectionStatus, addIngredient, removeIngredient,
-        getAllDrinks, getPossibleUnits, createDrink, startPump, makeDrink, deleteDrink }; 
+        getAllDrinks, getPossibleUnits, createDrink, startPump, makeDrink, deleteDrink, getIngredients }; 

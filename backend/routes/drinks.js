@@ -261,4 +261,11 @@ router.delete('/remove', async (req, res) => {
         res.send({error: error.message})
     }
 });
+
+router.post('/ingredients', async (req, res) => {
+    const id = req.body.id;
+    const ingredients = await DrinksDatabase.getIngredients(id);
+    res.status(200);
+    res.send({ingredients});
+});
 module.exports = router;

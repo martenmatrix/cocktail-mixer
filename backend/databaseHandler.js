@@ -1,5 +1,6 @@
 const sqlite3 = require('sqlite3').verbose();
-const drinksDatabase = new sqlite3.Database('./data/database.db', (err) => {
+const path = require('path');
+const drinksDatabase = new sqlite3.Database(path.resolve(__dirname, '../data/database.db'), (err) => {
     if (err) {
         console.error(err.message);
     } else {

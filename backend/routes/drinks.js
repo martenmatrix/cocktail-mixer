@@ -1,11 +1,13 @@
+const path = require('path');
+
 const DrinksDatabase = require('../databaseHandler');
 const checkPassword = require('../misc').checkPassword;
 const getCategoryOfIngredient = require('../misc').getCategoryOfIngredient;
 const activatePump = require('../raspberry').activatePump;
 const setTask = require('../currentTask').setTask;
 const getTask = require('../currentTask').getTask;
-const ingredientsJSONPATH = './data/ingredients.json';
-const pumpsJSONPATH = './data/pumps.json';
+const ingredientsJSONPATH = path.resolve(__dirname, '../../data/ingredients.json');
+const pumpsJSONPATH = path.resolve(__dirname, '../../data/pumps.json');
 
 const express = require('express');
 const fs = require('fs');
@@ -220,14 +222,12 @@ router.post('/make', async (req, res) => {
     const ingredients = await DrinksDatabase.getIngredients(idOfDrink);
     const notAdded = [];
     await Promise.all(ingredients.map(async (ingredient) => {
-
         const pumpID = await getPumpWithIngredient(ingredient.ingredient);
         if (pumpID === -1) {
             notAdded.push(ingredient);
-            return;
+            return Promise.resolve();
         }
 
-        console.log(ingredient);
         const unit = ingredient.unitOfMeasurement;
         const amount = ingredient.amountOfIngredient;
 
@@ -237,6 +237,7 @@ router.post('/make', async (req, res) => {
 
         const activationTimeInSeconds = mlToDispense / pumpRateMlPerSecond;
         const activationTime = activationTimeInSeconds * 1000;
+        console.log({mlToDispense, pumpRateMlPerSecond, activationTimeInSeconds, activationTime});
         await activatePump(pumpID, activationTime);
     }));
     res.status(200);

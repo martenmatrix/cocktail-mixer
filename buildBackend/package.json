@@ -8,7 +8,9 @@
     "startFrontend": "cd ./frontend && npm run start",
     "startBackend": "node ./backend/app",
     "start": "npm run startFrontend & npm run startBackend",
-    "build": "rm -f -r ./buildBackend && mkdir -p ./buildBackend/backend && cp -r ./backend ./buildBackend/backend && cp -t ./buildBackend .env package.json package-lock.json"
+    "build": "rm -f -r ./buildBackend && mkdir -p ./buildBackend/backend && cp -r ./backend/* ./buildBackend/backend && cp -t ./buildBackend .env package.json package-lock.json",
+    "uploadBackend": "rsync --recursive --progress ./buildBackend/ pi@192.168.178.45:~/Desktop/backend-server",
+    "uploadFrontend": "rsync --recursive --progress ./frontend/build/ pi@192.168.178.45:var/www/html"
   },
   "author": "",
   "license": "ISC",

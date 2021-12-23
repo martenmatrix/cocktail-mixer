@@ -5,10 +5,11 @@ const showOnDisplay = require('./raspberry').showOnDisplay;
 const activatePump = require('./raspberry').activatePump;
 const checkPassword = require('./misc').checkPassword;
 const getTask = require('./currentTask').getTask;
-const pumpsJSONPATH = './data/pumps.json';
+const path = require('path');
+const pumpsJSONPATH = path.resolve(__dirname, '../data/pumps.json');
 
 const result = dotenv.config({
-  path: './.env'
+  path: path.resolve(__dirname, '../.env')
 });
 if (result.error) {
   throw result.error;
@@ -94,29 +95,14 @@ app.post('/password', async (req, res) => {
   res.send(response);
 });
 
-
-let lastRequests = [
-  Promise.resolve(),
-  Promise.resolve(),
-  Promise.resolve(),
-  Promise.resolve(),
-  Promise.resolve(),
-  Promise.resolve(),
-  Promise.resolve(),
-  Promise.resolve(),
-];
-
 app.post('/startPump', async (req, res) => {
     res.status(200);
     res.send({success: true});
     const pumpID = req.body.id;
     const timeInMs = req.body.time;
 
-    const response = await Promise.race([lastRequests[pumpID - 1], 'loading']);
-    if (response === 'loading') return;
-
-    const promise = activatePump(pumpID, timeInMs);
-    lastRequests[pumpID - 1] = promise;
+    const newTime = parseFloat(timeInMs);
+    activatePump(pumpID, newTime);
 });
 
 // get ip with -hostname I

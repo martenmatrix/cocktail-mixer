@@ -1,7 +1,8 @@
-const HOSTNAME = window.location.href;
-const HOSTNAME_WITHOUT_PORT = HOSTNAME.slice(0, -6);
-const BACKEND_PORT = 4000;
-const BACKEND_LINK = `${HOSTNAME_WITHOUT_PORT}:${BACKEND_PORT}/`;
+// const HOSTNAME = window.location.href;
+// const HOSTNAME_WITHOUT_PORT = HOSTNAME.slice(0, -6);
+// const BACKEND_PORT = 4000;
+// const BACKEND_LINK = `${HOSTNAME_WITHOUT_PORT}:${BACKEND_PORT}/`;
+const BACKEND_LINK = 'http://192.168.178.45:4000/';
 
 async function getStatus() {
     try {

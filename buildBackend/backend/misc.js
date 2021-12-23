@@ -1,5 +1,6 @@
-const ingredientsJSONPATH = './data/ingredients.json';
 const fs = require('fs');
+const path = require('path');
+const ingredientsJSONPATH = path.resolve(__dirname, '../data/ingredients.json');
 
 function checkPassword(password) {
     const response = {

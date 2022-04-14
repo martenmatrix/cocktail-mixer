@@ -145,9 +145,18 @@ This repository contains the frontend and backend code for my cocktail mixer. Th
 </ol>
 
 ## :sparkles: Features
-- automatically detects origin of CSV
-- calculate conversion fees in specific timeframe
-- calculate realized incomes and losses with the first-in first-out method in specific timeframe
+- everyone on your local network can make a drink by visiting the website hosted by the machine in your local network
+- automatically mix a drink with the press of a button
+- create a drink, get it automatically categorized in the sections alcoholic/non-alcoholic
+- add available ingredients and assign them a category
+- protect the deletion and creation of ingredients, the deletion of drinks, and the changing of settings by a password
+- change each pump's connected ingredient
+- activate one or multiple pump/s by holding a button
+- website always displays if it is able to reach the backend of the machine
+- current status/task of the machine is always displayed
+- everything gets automatically saved
+- displays debug information
+- displays ingredients and their amounts contained in the drink the user is about to make
 
 ## :wrench: Installation
 

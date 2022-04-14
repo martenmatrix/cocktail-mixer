@@ -215,7 +215,7 @@ It is assumed that the pumps are connected to the following GPIO pins, if you wa
 
 An issue can opened [here](https://github.com/martenmatrix/cocktail-mixer/issues/new).
 
-# Build
+## :hammer: Build
 This is an explanation, how it is possible to build a Cocktail Mixer. However, please note, that this is definitely not a detailed and complete guide.
 
 ### Parts

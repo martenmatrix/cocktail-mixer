@@ -237,7 +237,7 @@ The DC-DC converter is needed to power the Raspberry Pi with the Power Supply, o
 
 <details>
 	<summary>
-		Images of the built machine
+		<b>Images of the built machine</b>
 	</summary>
 	<div>
 		<details>
